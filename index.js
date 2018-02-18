@@ -8,7 +8,9 @@ var ATTR_EQ = 11, ATTR_BREAK = 12
 var COMMENT = 13, SELF_CLOSE = 14
 
 module.exports = function (h, opts) {
-  if (!opts) opts = {}
+  if (!opts) opts = {
+    comments: true
+  }
   var concat = opts.concat || function (a, b) {
     return String(a) + String(b)
   }

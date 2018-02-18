@@ -1,7 +1,7 @@
 var test = require('tape')
 var hyperx = require('../')
-var hx = hyperx(createElement)
-var hxc = hyperx(createElement, {comments: true})
+var hx = hyperx(createElement, {comments: false})
+var hxc = hyperx(createElement)
 
 function createElement(tag, props, children) {
   if (tag === '!--') {
@@ -44,7 +44,7 @@ test('many comments', function (t) {
   t.end()
 })
 
-test('excluded by default', function (t) {
+test('excluded when turned off', function (t) {
   var tree = hx`<div><!-- comment --></div>`
   t.equal(tree, '<div></div>')
   t.end()
