@@ -166,19 +166,17 @@ module.exports = function (h, opts) {
           reg = ''
           state = TEXT
         } else if (state === COMMENT && /-$/.test(reg) && c === '-') {
-          if (opts.comments) {
-            res.push([ATTR_VALUE,reg.substr(0, reg.length - 1)],[CLOSE])
-          }
+          res.push([ATTR_VALUE,reg.substr(0, reg.length - 1)],[CLOSE])
           reg = ''
           state = TEXT
         } else if (state === OPEN && /^!--$/.test(reg)) {
-          if (opts.comments) {
-            res.push([OPEN, reg],[ATTR_KEY,'comment'],[ATTR_EQ])
-          }
+          res.push([OPEN, reg],[ATTR_KEY,'comment'],[ATTR_EQ])
           reg = c
           state = COMMENT
         } else if (state === TEXT || state === COMMENT) {
           reg += c
+        } else if (state === OPEN && c === '/' && reg.length) {
+          // no-op, self closing tag without a space (e.g. <br/>)
         } else if (state === OPEN && /\s/.test(c)) {
           res.push([OPEN, reg])
           reg = ''
