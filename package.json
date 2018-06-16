@@ -1,7 +1,7 @@
 {
-  "name": "hyperx",
-  "version": "2.3.3",
-  "description": "tagged template string virtual dom builder",
+  "name": "hyperz",
+  "version": "3.0.0",
+  "description": "tagged template string builder for custom tags",
   "main": "index.js",
   "scripts": {
     "test": "tape test/*.js",
@@ -15,7 +15,8 @@
     "hyperscript",
     "template string",
     "template",
-    "es6"
+    "es6",
+    "hyperx"
   ],
   "author": "substack",
   "license": "BSD",
@@ -28,16 +29,12 @@
   "dependencies": {
     "hyperscript-attribute-to-property": "^1.0.0"
   },
-  "directories": {
-    "example": "example",
-    "test": "test"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/substack/hyperx.git"
+    "url": "git+https://github.com/Tram-One/hyperx-turbo.git"
   },
   "bugs": {
-    "url": "https://github.com/substack/hyperx/issues"
+    "url": "https://github.com/Tram-One/hyperx-turbo/issues"
   },
-  "homepage": "https://github.com/substack/hyperx#readme"
+  "homepage": "https://github.com/Tram-One/hyperx-turbo#readme"
 }
