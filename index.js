@@ -30,7 +30,7 @@ module.exports = function (h, opts) {
         var xstate = state
         if (xstate === ATTR_VALUE_DQ) xstate = ATTR_VALUE
         if (xstate === ATTR_VALUE_SQ) xstate = ATTR_VALUE
-        if (xstate === ATTR_VALUE_W && isDefined(arg)) xstate = ATTR_VALUE
+        if (xstate === ATTR_VALUE_W) xstate = ATTR_VALUE
         if (xstate === ATTR) xstate = ATTR_KEY
         p.push([ VAR, xstate, arg ])
         parts.push.apply(parts, p)
@@ -144,6 +144,23 @@ module.exports = function (h, opts) {
       if (state === ATTR_VALUE_W) state = ATTR
       for (var i = 0; i < str.length; i++) {
         var c = str.charAt(i)
+        if (state === COMMENT) {
+          // ignore until we get to close comment
+          if (/-$/.test(reg) && c === '-') {
+            if (opts.comments) {
+              // console.log("CLOSING COMMENT ATTR")
+              res.push([ATTR_VALUE,reg.substr(0, reg.length - 1)],[ATTR_BREAK])
+            }
+            // console.log(opts.comments)
+            // console.log(reg)
+            reg = ''
+            state = TEXT
+          }
+          else {
+            reg += c
+            continue
+          }
+        }
         if (state === TEXT && c === '<') {
           if (reg.length) res.push([TEXT, reg])
           reg = ''
@@ -167,19 +184,13 @@ module.exports = function (h, opts) {
           res.push([CLOSE])
           reg = ''
           state = TEXT
-        } else if (state === COMMENT && /-$/.test(reg) && c === '-') {
-          if (opts.comments) {
-            res.push([ATTR_VALUE,reg.substr(0, reg.length - 1)],[CLOSE])
-          }
-          reg = ''
-          state = TEXT
         } else if (state === OPEN && /^!--$/.test(reg)) {
           if (opts.comments) {
             res.push([OPEN, reg],[ATTR_KEY,'comment'],[ATTR_EQ])
           }
           reg = c
           state = COMMENT
-        } else if (state === TEXT || state === COMMENT) {
+        } else if (state === TEXT) {
           reg += c
         } else if (state === OPEN && c === '/' && reg.length) {
           res.push([OPEN, reg])
@@ -264,13 +275,11 @@ module.exports = function (h, opts) {
     if (typeof x === 'function') return x
     else if (typeof x === 'string') return x
     else if (x && typeof x === 'object') return x
+    else if (x === null || x === undefined) return x
     else return concat('', x)
   }
 }
 
-function isDefined (arg) {
-  return arg !== null && arg !== undefined
-}
 function quot (state) {
   return state === ATTR_VALUE_SQ || state === ATTR_VALUE_DQ
 }
