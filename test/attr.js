@@ -75,6 +75,18 @@ test('strange inbetween character attributes', function (t) {
   t.end()
 })
 
+test('integer (injected) attribute', function (t) {
+  var tree = hx`<div foo=${10}></div>`
+  t.equal(vdom.create(tree).toString(), `<div foo="10"></div>`)
+  t.end()
+})
+
+test('integer attribute', function (t) {
+  var tree = hx`<div foo=10></div>`
+  t.equal(vdom.create(tree).toString(), `<div foo="10"></div>`)
+  t.end()
+})
+
 test('undefined (injected) attribute value is ignored', function (t) {
   var tree = hx`<div foo=${undefined}></div>`
   t.equal(vdom.create(tree).toString(), `<div></div>`)

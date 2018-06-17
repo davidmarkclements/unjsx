@@ -14,6 +14,19 @@ module.exports = function (h, opts) {
   const concat = opts.concat || function (a, b) {
     return String(a) + String(b)
   }
+
+  const strfn = (x) => {
+    switch (typeof x) {
+      case 'function':
+      case 'string':
+      case 'object':
+      case 'undefined':
+        return x
+      default:
+        return concat('', x)
+    }
+  }
+
   if (opts.attrToProp !== false) {
     h = attrToProp(h)
   }
@@ -272,18 +285,6 @@ module.exports = function (h, opts) {
       }
       return res
     }
-  }
-}
-
-const strfn = (x) => {
-  switch (typeof x) {
-    case 'function':
-    case 'string':
-    case 'object':
-    case 'undefined':
-      return x
-    default:
-      return concat('', x)
   }
 }
 

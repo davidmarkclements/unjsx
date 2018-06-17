@@ -1,6 +1,6 @@
 {
   "name": "hyperz",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "tagged template string builder for custom tags",
   "main": "index.js",
   "scripts": {
