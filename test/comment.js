@@ -16,6 +16,12 @@ test('1 comment', function (t) {
   t.end()
 })
 
+test('with injected value', function (t) {
+  var tree = hxc`<!-- ${'test'} -->`
+  t.equal(tree, '<!-- test -->')
+  t.end()
+})
+
 test('with basic dom inside', function (t) {
   var tree = hxc`<!-- <div>Foo</div> -->`
   t.equal(tree, '<!-- <div>Foo</div> -->')
@@ -25,6 +31,12 @@ test('with basic dom inside', function (t) {
 test('with dom and props inside', function (t) {
   var tree = hxc`<!-- <div value="foo">Foo</div> -->`
   t.equal(tree, '<!-- <div value="foo">Foo</div> -->')
+  t.end()
+})
+
+test('with dom and injected props inside', function (t) {
+  var tree = hxc`<!-- <div value=${'foo'}>Foo</div> -->`
+  t.equal(tree, '<!-- <div value=foo>Foo</div> -->')
   t.end()
 })
 

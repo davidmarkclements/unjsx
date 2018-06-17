@@ -32,6 +32,12 @@ module.exports = function (h, opts) {
         if (xstate === ATTR_VALUE_SQ) xstate = ATTR_VALUE
         if (xstate === ATTR_VALUE_W) xstate = ATTR_VALUE
         if (xstate === ATTR) xstate = ATTR_KEY
+        if (xstate === COMMENT) {
+          console.log('36', reg)
+          reg+=arg
+          xstate = ATTR_VALUE
+          arg = ''
+        }
         p.push([ VAR, xstate, arg ])
         parts.push.apply(parts, p)
       } else parts.push.apply(parts, parse(strings[i]))
@@ -75,6 +81,7 @@ module.exports = function (h, opts) {
         if (parts[i][0] === ATTR_EQ) i++
         var j = i
         for (; i < parts.length; i++) {
+          console.log('80', parts[i])
           if (parts[i][0] === ATTR_VALUE || parts[i][0] === ATTR_KEY) {
             if (!cur[1][key]) cur[1][key] = strfn(parts[i][1])
             else parts[i][1]==="" || (cur[1][key] = concat(cur[1][key], parts[i][1]));
@@ -95,11 +102,11 @@ module.exports = function (h, opts) {
             break
           }
         }
-      } else if (s === ATTR_KEY) {
-        cur[1][p[1]] = true
-      } else if (s === VAR && p[1] === ATTR_KEY) {
-        cur[1][p[2]] = true
-      } else if (s === CLOSE) {
+      } else if (s === ATTR_VALUE) {
+        // console.log('101', p)
+        // console.log('102', cur)
+        // console.log('103', stack)
+        // throw new Error()
       } else if (s === SELF_CLOSE) {
         var ix = stack[stack.length-1][1]
         stack.pop()
@@ -116,7 +123,7 @@ module.exports = function (h, opts) {
         }
       } else if (s === TEXT) {
         cur[2].push(p[1])
-      } else if (s === ATTR_EQ || s === ATTR_BREAK) {
+      } else if (s === ATTR_EQ || s === ATTR_BREAK || s === CLOSE) {
         // no-op
       } else {
         throw new Error('unhandled: ' + s)
@@ -148,11 +155,10 @@ module.exports = function (h, opts) {
           // ignore until we get to close comment
           if (/-$/.test(reg) && c === '-') {
             if (opts.comments) {
-              // console.log("CLOSING COMMENT ATTR")
-              res.push([ATTR_VALUE,reg.substr(0, reg.length - 1)],[ATTR_BREAK])
+              console.log('155', "CLOSING COMMENT ATTR")
+              res.push([ATTR_VALUE,reg.substr(0, reg.length - 1)],[CLOSE])
             }
-            // console.log(opts.comments)
-            // console.log(reg)
+            console.log('158', reg)
             reg = ''
             state = TEXT
           }
@@ -251,19 +257,21 @@ module.exports = function (h, opts) {
           reg += c
         }
       }
-      if (state === TEXT && reg.length) {
-        res.push([TEXT,reg])
-        reg = ''
-      } else if (state === ATTR_VALUE && reg.length) {
-        res.push([ATTR_VALUE,reg])
-        reg = ''
-      } else if (state === ATTR_VALUE_DQ && reg.length) {
-        res.push([ATTR_VALUE,reg])
-        reg = ''
-      } else if (state === ATTR_VALUE_SQ && reg.length) {
-        res.push([ATTR_VALUE,reg])
-        reg = ''
-      } else if (state === ATTR_KEY) {
+      if (reg.length) {
+        switch (state) {
+          case TEXT:
+            res.push([TEXT,reg])
+            reg = ''
+            break
+          case ATTR_VALUE:
+          case ATTR_VALUE_DQ:
+          case ATTR_VALUE_SQ:
+            res.push([ATTR_VALUE,reg])
+            reg = ''
+            break
+        }
+      }
+      if (state === ATTR_KEY) {
         res.push([ATTR_KEY,reg])
         reg = ''
       }
@@ -272,11 +280,15 @@ module.exports = function (h, opts) {
   }
 
   function strfn (x) {
-    if (typeof x === 'function') return x
-    else if (typeof x === 'string') return x
-    else if (x && typeof x === 'object') return x
-    else if (x === null || x === undefined) return x
-    else return concat('', x)
+    switch (typeof x) {
+      case 'function':
+      case 'string':
+      case 'object':
+      case 'undefined':
+        return x
+      default:
+        return concat('', x)
+    }
   }
 }
 
