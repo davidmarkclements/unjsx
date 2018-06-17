@@ -74,3 +74,39 @@ test('strange inbetween character attributes', function (t) {
   t.equal(vdom.create(tree).toString(), `<div f@o="bar" b&z="qux"></div>`)
   t.end()
 })
+
+test('undefined (injected) attribute value is ignored', function (t) {
+  var tree = hx`<div foo=${undefined}></div>`
+  t.equal(vdom.create(tree).toString(), `<div></div>`)
+  t.end()
+})
+
+test('null (injected) attribute value is ignored', function (t) {
+  var tree = hx`<div foo=${null}></div>`
+  t.equal(vdom.create(tree).toString(), `<div></div>`)
+  t.end()
+})
+
+test('undefined (with quotes) attribute value is evaluated', function (t) {
+  var tree = hx`<div foo='undefined'></div>`
+  t.equal(vdom.create(tree).toString(), `<div foo="undefined"></div>`)
+  t.end()
+})
+
+test('null (with quotes) attribute value is evaluated', function (t) {
+  var tree = hx`<div foo='null'></div>`
+  t.equal(vdom.create(tree).toString(), `<div foo="null"></div>`)
+  t.end()
+})
+
+test('undefined (without quotes) attribute value is evaluated', function (t) {
+  var tree = hx`<div foo=undefined></div>`
+  t.equal(vdom.create(tree).toString(), `<div foo="undefined"></div>`)
+  t.end()
+})
+
+test('null (without quotes) attribute value is evaluated', function (t) {
+  var tree = hx`<div foo=null></div>`
+  t.equal(vdom.create(tree).toString(), `<div foo="null"></div>`)
+  t.end()
+})

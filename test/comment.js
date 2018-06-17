@@ -16,6 +16,18 @@ test('1 comment', function (t) {
   t.end()
 })
 
+test('with basic dom inside', function (t) {
+  var tree = hxc`<!-- <div>Foo</div> -->`
+  t.equal(tree, '<!-- <div>Foo</div> -->')
+  t.end()
+})
+
+test('with dom and props inside', function (t) {
+  var tree = hxc`<!-- <div value="foo">Foo</div> -->`
+  t.equal(tree, '<!-- <div value="foo">Foo</div> -->')
+  t.end()
+})
+
 test('with crazy characters', function (t) {
   var tree = hxc`<!-- .-_<>|[]{}"' -->`
   t.equal(tree, '<!-- .-_<>|[]{}"\' -->')
