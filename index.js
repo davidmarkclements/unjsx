@@ -1,17 +1,17 @@
-var attrToProp = require('hyperscript-attribute-to-property')
+const attrToProp = require('hyperscript-attribute-to-property')
 
-var VAR = 0, TEXT = 1, OPEN = 2, CLOSE = 3, ATTR = 4
-var ATTR_KEY = 5, ATTR_KEY_W = 6
-var ATTR_VALUE_W = 7, ATTR_VALUE = 8
-var ATTR_VALUE_SQ = 9, ATTR_VALUE_DQ = 10
-var ATTR_EQ = 11, ATTR_BREAK = 12
-var COMMENT = 13, SELF_CLOSE = 14
+const VAR = 0, TEXT = 1, OPEN = 2, CLOSE = 3, ATTR = 4,
+      ATTR_KEY = 5, ATTR_KEY_W = 6,
+      ATTR_VALUE_W = 7, ATTR_VALUE = 8,
+      ATTR_VALUE_SQ = 9, ATTR_VALUE_DQ = 10,
+      ATTR_EQ = 11, ATTR_BREAK = 12,
+      COMMENT = 13, SELF_CLOSE = 14
 
 module.exports = function (h, opts) {
   if (!opts) opts = {
     comments: true
   }
-  var concat = opts.concat || function (a, b) {
+  const concat = opts.concat || function (a, b) {
     return String(a) + String(b)
   }
   if (opts.attrToProp !== false) {
@@ -28,14 +28,18 @@ module.exports = function (h, opts) {
         var arg = arguments[i+1]
         var p = parse(strings[i])
         var xstate = state
-        if (xstate === ATTR_VALUE_DQ) xstate = ATTR_VALUE
-        if (xstate === ATTR_VALUE_SQ) xstate = ATTR_VALUE
-        if (xstate === ATTR_VALUE_W) xstate = ATTR_VALUE
-        if (xstate === ATTR) xstate = ATTR_KEY
-        if (xstate === COMMENT) {
-          reg+=arg
-          xstate = ATTR_VALUE
-          arg = ''
+        switch (xstate) {
+          case COMMENT:
+            reg+=arg
+            arg = ''
+          case ATTR_VALUE_DQ:
+          case ATTR_VALUE_SQ:
+          case ATTR_VALUE_W:
+            xstate = ATTR_VALUE
+            break
+          case ATTR:
+            xstate = ATTR_KEY
+            break
         }
         p.push([ VAR, xstate, arg ])
         parts.push.apply(parts, p)
@@ -269,20 +273,19 @@ module.exports = function (h, opts) {
       return res
     }
   }
+}
 
-  function strfn (x) {
-    switch (typeof x) {
-      case 'function':
-      case 'string':
-      case 'object':
-      case 'undefined':
-        return x
-      default:
-        return concat('', x)
-    }
+const strfn = (x) => {
+  switch (typeof x) {
+    case 'function':
+    case 'string':
+    case 'object':
+    case 'undefined':
+      return x
+    default:
+      return concat('', x)
   }
 }
 
-function quot (state) {
-  return state === ATTR_VALUE_SQ || state === ATTR_VALUE_DQ
-}
+const quot = (state) =>
+  state === ATTR_VALUE_SQ || state === ATTR_VALUE_DQ
