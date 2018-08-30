@@ -20,6 +20,7 @@ module.exports = function (h, opts) {
       case 'function':
       case 'string':
       case 'object':
+      case 'boolean':
       case 'undefined':
         return x
       default:

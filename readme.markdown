@@ -1,9 +1,6 @@
-# hyperz
-
-tagged template string virtual dom builder
+# unjsx
 
 Fork of [hyperx](https://github.com/choojs/hyperx)
-_The below documentation is from the hyperx repo at the time of forking_
 
 This module is similar to JSX, but provided as a standards-compliant ES6 tagged
 template string function.
