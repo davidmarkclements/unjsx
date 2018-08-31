@@ -21,6 +21,7 @@ module.exports = function (h, opts) {
       case 'string':
       case 'object':
       case 'boolean':
+      case 'number':
       case 'undefined':
         return x
       default:
