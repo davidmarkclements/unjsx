@@ -13,7 +13,7 @@ test('ignore whitespace surrounding an element', function (t) {
     <div></div>
   `;
   t.equal(vdom.create(tree).toString(), '<div></div>')
-  // It shouldn't strip whitespace from a text node
-  t.equal(hx`  hello world  `, '  hello world  ')
+  // It should condense whitespace from a text node
+  t.equal(hx`  hello world  `, ' hello world ')
   t.end()
 })

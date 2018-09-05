@@ -3,12 +3,7 @@ var vdom = require('virtual-dom')
 var hyperx = require('../')
 var hx = hyperx(vdom.h)
 
-var expected = `<div>
-    <h1 y="ab3cd">hello world!</h1>
-    <i>cool</i>
-    wow
-    <b>1</b><b>2</b><b>3</b>
-  </div>`
+var expected = `<div><h1 y="ab3cd">hello world!</h1>\n<i>cool</i>\nwow\n<b>1</b><b>2</b><b>3</b></div>`
 
 test('vdom', function (t) {
   var title = 'world'

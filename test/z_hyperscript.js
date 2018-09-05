@@ -4,12 +4,7 @@ var hyperx = require('../')
 var hx = hyperx(h)
 
 // We cant use custom attributes y="" with hyperscript in the browser, use data-y="" instead
-var expected = `<div>
-    <h1 data-y="ab3cd">hello world!</h1>
-    <i>cool</i>
-    wow
-    <b>1</b><b>2</b><b>3</b>
-  </div>`
+var expected = `<div><h1 data-y="ab3cd">hello world!</h1>\n<i>cool</i>\nwow\n<b>1</b><b>2</b><b>3</b></div>`
 
 test('hyperscript', function (t) {
   var title = 'world'

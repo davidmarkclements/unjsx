@@ -1,38 +1,13 @@
-const attrToProp = require('hyperscript-attribute-to-property')
 
 const VAR = 0, TEXT = 1, OPEN = 2, CLOSE = 3, ATTR = 4,
       ATTR_KEY = 5, ATTR_KEY_W = 6,
       ATTR_VALUE_W = 7, ATTR_VALUE = 8,
       ATTR_VALUE_SQ = 9, ATTR_VALUE_DQ = 10,
       ATTR_EQ = 11, ATTR_BREAK = 12,
-      COMMENT = 13, SELF_CLOSE = 14
+      SELF_CLOSE = 13
 
 module.exports = function (h, opts) {
-  if (!opts) opts = {
-    comments: true
-  }
-  const concat = opts.concat || function (a, b) {
-    return String(a) + String(b)
-  }
-
-  const strfn = (x) => {
-    switch (typeof x) {
-      case 'function':
-      case 'string':
-      case 'object':
-      case 'boolean':
-      case 'number':
-      case 'undefined':
-        return x
-      default:
-        return concat('', x)
-    }
-  }
-
-  if (opts.attrToProp !== false) {
-    h = attrToProp(h)
-  }
-
+  if (!opts) opts = {}
   return function (strings) {
     var state = TEXT, reg = ''
     var arglen = arguments.length
@@ -44,9 +19,6 @@ module.exports = function (h, opts) {
         var p = parse(strings[i])
         var xstate = state
         switch (xstate) {
-          case COMMENT:
-            reg+=arg
-            arg = ''
           case ATTR_VALUE_DQ:
           case ATTR_VALUE_SQ:
           case ATTR_VALUE_W:
@@ -83,7 +55,7 @@ module.exports = function (h, opts) {
         var copyKey
         for (; i < parts.length; i++) {
           if (parts[i][0] === ATTR_KEY) {
-            key = concat(key, parts[i][1])
+            key += parts[i][1]
           } else if (parts[i][0] === VAR && parts[i][1] === ATTR_KEY) {
             if (typeof parts[i][2] === 'object' && !key) {
               for (copyKey in parts[i][2]) {
@@ -92,7 +64,7 @@ module.exports = function (h, opts) {
                 }
               }
             } else {
-              key = concat(key, parts[i][2])
+              key += parts[i][2]
             }
           } else break
         }
@@ -100,12 +72,12 @@ module.exports = function (h, opts) {
         var j = i
         for (; i < parts.length; i++) {
           if (parts[i][0] === ATTR_VALUE || parts[i][0] === ATTR_KEY) {
-            if (!cur[1][key]) cur[1][key] = strfn(parts[i][1])
-            else parts[i][1]==="" || (cur[1][key] = concat(cur[1][key], parts[i][1]));
+            if (!cur[1][key]) cur[1][key] = parts[i][1]
+            else parts[i][1]==="" || (cur[1][key] += parts[i][1]);
           } else if (parts[i][0] === VAR
           && (parts[i][1] === ATTR_VALUE || parts[i][1] === ATTR_KEY)) {
-            if (!cur[1][key]) cur[1][key] = strfn(parts[i][2])
-            else parts[i][2]==="" || (cur[1][key] = concat(cur[1][key], parts[i][2]));
+            if (!cur[1][key]) cur[1][key] = parts[i][2]
+            else parts[i][2]==="" || (cur[1][key] += parts[i][2]);
           } else {
             if (key.length && !cur[1][key] && i === j
             && (parts[i][0] === CLOSE || parts[i][0] === ATTR_BREAK)) {
@@ -127,7 +99,7 @@ module.exports = function (h, opts) {
         )
       } else if (s === VAR && p[1] === TEXT) {
         if (p[2] === undefined || p[2] === null) p[2] = ''
-        else if (!p[2]) p[2] = concat('', p[2])
+        else if (!p[2]) p[2] = p[2] + ''
         if (Array.isArray(p[2][0])) {
           cur[2].push.apply(cur[2], p[2])
         } else {
@@ -160,36 +132,21 @@ module.exports = function (h, opts) {
 
     function parse (str) {
       var res = []
+      var lastC = ''
       if (state === ATTR_VALUE_W) state = ATTR
       for (var i = 0; i < str.length; i++) {
         var c = str.charAt(i)
-        if (state === COMMENT) {
-          // ignore until we get to close comment
-          if (/-$/.test(reg) && c === '-') {
-            if (opts.comments) {
-              res.push([ATTR_VALUE,reg.substr(0, reg.length - 1)],[CLOSE])
-            }
-            reg = ''
-            state = TEXT
-          }
-          else {
-            reg += c
-            continue
-          }
-        }
+        if (/\s\s/.test(lastC + c)) continue
+        if (state === OPEN && lastC === '<' && c === '!') throw Error('unjsx: html comments are invalid')
         if (state === TEXT && c === '<') {
-          if (reg.length) res.push([TEXT, reg])
+          if (reg.length && !/^\s$|-/.test(reg)) res.push([TEXT, reg])
           reg = ''
           state = OPEN
         } else if (c === '>' && str.charAt(i - 1) === '/') {
           res.push([SELF_CLOSE])
           reg = ''
           state = TEXT
-        } else if (c === '>' && str.charAt(i - 1) === '-' && str.charAt(i - 2) === '-') {
-          res.push([SELF_CLOSE])
-          reg = ''
-          state = TEXT
-        } else if (c === '>' && !quot(state) && state !== COMMENT) {
+        } else if (c === '>' && !quot(state)) {
           if (state === OPEN) {
             res.push([OPEN,reg])
           } else if (state === ATTR_KEY) {
@@ -200,12 +157,6 @@ module.exports = function (h, opts) {
           res.push([CLOSE])
           reg = ''
           state = TEXT
-        } else if (state === OPEN && /^!--$/.test(reg)) {
-          if (opts.comments) {
-            res.push([OPEN, reg],[ATTR_KEY,'comment'],[ATTR_EQ])
-          }
-          reg = c
-          state = COMMENT
         } else if (state === TEXT) {
           reg += c
         } else if (state === OPEN && c === '/' && reg.length) {
@@ -266,6 +217,7 @@ module.exports = function (h, opts) {
         || state === ATTR_VALUE_DQ) {
           reg += c
         }
+        lastC = c
       }
       if (reg.length) {
         switch (state) {

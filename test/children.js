@@ -16,16 +16,7 @@ test('no children', function (t) {
 })
 
 test('multiple children', function (t) {
-  var html = `<div>
-    <h1>title</h1>
-    <div>
-      <ul>
-        <li>
-          <a href="#">click</a>
-        </li>
-      </ul>
-    </div>
-  </div>`
+  var html = `<div><h1>title</h1><div><ul><li><a href="#">click</a></li></ul></div></div>`
   var tree = hx`
   <div>
     <h1>title</h1>

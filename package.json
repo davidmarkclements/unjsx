@@ -27,7 +27,6 @@
     "virtual-dom": "^2.1.1"
   },
   "dependencies": {
-    "hyperscript-attribute-to-property": "^1.0.0"
   },
   "repository": {
     "type": "git",
