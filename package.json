@@ -1,6 +1,6 @@
 {
   "name": "unjsx",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "tagged template string builder for custom tags",
   "main": "index.js",
   "scripts": {
@@ -26,8 +26,7 @@
     "tape": "^4.4.0",
     "virtual-dom": "^2.1.1"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/davidmarkclements/unjsx.git"
