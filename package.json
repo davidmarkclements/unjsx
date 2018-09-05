@@ -1,6 +1,6 @@
 {
   "name": "unjsx",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "tagged template string builder for custom tags",
   "main": "index.js",
   "scripts": {
