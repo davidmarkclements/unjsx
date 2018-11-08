@@ -242,5 +242,6 @@ module.exports = function (h, opts) {
   }
 }
 
-const quot = (state) =>
-  state === ATTR_VALUE_SQ || state === ATTR_VALUE_DQ
+function quot (state) {
+  return state === ATTR_VALUE_SQ || state === ATTR_VALUE_DQ
+}
